@@ -22,4 +22,4 @@ uninstall-minikube:
 	kubectl delete -f minikube-deployment.yaml --namespace=practice
 
 rmq-creds:
-	kubectl --namespace practice create secret generic rmq-creds --from-env-file=.env.secret
+	kubectl --namespace practice create secret generic rmq-creds --from-env-file=.env
