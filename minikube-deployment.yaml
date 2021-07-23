@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: consumer
+  name: consumer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - image: consumer:latest
+        name: consumer
+        imagePullPolicy: Never
+        command: ["python", "-u", "consumer/consumer.py"]
+        env:
+          - name: RMQ_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: rmq-creds
+                key: RMQ_USERNAME
+          - name: RMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: rmq-creds
+                key: RMQ_PASSWORD
+          - name: RMQ_HOST
+            value: "minikube-rabbitmq"
+          - name: RMQ_PORT
+            value: "5672"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: producer
+  name: producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+      - image: producer:latest
+        name: producer
+        imagePullPolicy: Never
+        command: ["python", "-u", "producer/producer.py"]
+        env:
+          - name: RMQ_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: rmq-creds
+                key: RMQ_USERNAME
+          - name: RMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: rmq-creds
+                key: RMQ_PASSWORD
+          - name: RMQ_HOST
+            value: "minikube-rabbitmq"
+          - name: RMQ_PORT
+            value: "5672"
+
